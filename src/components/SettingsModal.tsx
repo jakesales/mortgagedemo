@@ -55,7 +55,10 @@ export function SettingsModal() {
     updateSettings({
       firstName: draft.firstName.trim(),
       email: draft.email.trim(),
-      countryCode: draft.countryCode.trim() || '+44',
+      countryCode: (() => {
+        const digits = draft.countryCode.replace(/\D/g, '')
+        return digits ? `+${digits}` : '+44'
+      })(),
       mobileNumber: draft.mobileNumber.trim(),
     })
   }
@@ -123,17 +126,29 @@ export function SettingsModal() {
 
           <div>
             <FieldLabel id="settings-mobile">Mobile number</FieldLabel>
-            <div className="mt-1.5 flex gap-2">
+            <p className="mt-1 text-xs text-ink-muted">e.g. +447736736363</p>
+            <div className="mt-1.5 flex">
+              <span
+                className="flex shrink-0 items-center rounded-l-lg border border-r-0 border-border bg-canvas px-3 py-2.5 text-sm font-semibold text-ink"
+                aria-hidden
+              >
+                +
+              </span>
               <input
                 id="settings-country-code"
                 type="tel"
+                inputMode="numeric"
                 autoComplete="tel-country-code"
-                value={draft.countryCode}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, countryCode: e.target.value }))
-                }
-                className={`${inputClassName} mt-0 w-24 shrink-0`}
-                placeholder="+44"
+                value={draft.countryCode.replace(/^\+/, '')}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '')
+                  setDraft((d) => ({
+                    ...d,
+                    countryCode: digits ? `+${digits}` : '+',
+                  }))
+                }}
+                className={`${inputClassName} mt-0 w-[4.5rem] shrink-0 rounded-none border-r-0 px-2.5`}
+                placeholder="44"
                 aria-label="Country code"
               />
               <input
@@ -144,8 +159,8 @@ export function SettingsModal() {
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, mobileNumber: e.target.value }))
                 }
-                className={`${inputClassName} mt-0 min-w-0 flex-1`}
-                placeholder="7700 900123"
+                className={`${inputClassName} mt-0 min-w-0 flex-1 rounded-l-none`}
+                placeholder="7736736363"
               />
             </div>
           </div>

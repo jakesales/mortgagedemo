@@ -324,17 +324,17 @@ export function MortgageSection({
             {((!keepSamePayments && monthlySaving > 0) ||
               (keepSamePayments && calculations.saved > 0)) && (
               <div className="mt-3 flex items-center justify-between gap-3 rounded-md border border-positive/30 bg-positive-soft p-3">
-                <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex shrink-0 items-center gap-2.5">
                   {!keepSamePayments ? (
                     <ArrowDown className="h-4 w-4 shrink-0 text-positive" />
                   ) : (
                     <Clock className="h-4 w-4 shrink-0 text-positive" />
                   )}
-                  <p className="text-base font-bold leading-tight tabular-nums text-positive">
+                  <p className="whitespace-nowrap text-base font-bold leading-tight tabular-nums text-positive">
                     {!keepSamePayments ? (
                       <>
-                        <span className="block">Save {formatGBP(monthlySaving)}</span>
-                        <span className="block text-sm font-semibold">a month</span>
+                        Save {formatGBP(monthlySaving)}
+                        {'\u00a0'}a month
                       </>
                     ) : (
                       <>
