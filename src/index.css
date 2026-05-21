@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+/* CMME broker site tokens — https://broker.cmmemortgages.com */
+@theme {
+  --font-sans: 'Nunito Sans', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --radius-lg: 0.75rem;
+
+  --color-ink: hsl(220 20% 12%);
+  --color-ink-muted: hsl(220 10% 46%);
+  --color-ink-faint: hsl(220 8% 58%);
+  --color-surface: hsl(0 0% 100%);
+  --color-canvas: hsl(220 16% 96%);
+  --color-border: hsl(220 13% 91%);
+  --color-border-strong: hsl(220 13% 85%);
+  --color-accent: hsl(0 78% 55%);
+  --color-accent-soft: hsl(0 78% 97%);
+  --color-positive: hsl(150 40% 40%);
+  --color-positive-soft: hsl(150 40% 95%);
+  --color-warning: hsl(43 74% 49%);
+  --color-warning-soft: hsl(43 74% 95%);
+  --color-critical: hsl(0 84% 60%);
+  --color-critical-soft: hsl(0 84% 97%);
+  --color-navy: hsl(220 20% 12%);
+  --color-brand-slate: hsl(220 50% 30%);
+  --color-brand-slate-soft: hsl(220 60% 97%);
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink min-h-screen;
+  }
+
+}
