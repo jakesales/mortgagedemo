@@ -2,6 +2,7 @@ import { useEffect, useId, useState, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { useUserSettings } from '../context/UserSettingsContext'
 import {
+  emptySettingsForm,
   mobileDigitsForInput,
   normalizeUserSettings,
   parseMobileDigits,
@@ -26,15 +27,15 @@ const inputClassName =
   'mt-1.5 w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-accent focus:ring-2 focus:ring-accent/20'
 
 export function SettingsModal() {
-  const { settings, settingsOpen, closeSettings, updateSettings } = useUserSettings()
+  const { settingsOpen, closeSettings, updateSettings } = useUserSettings()
   const titleId = useId()
-  const [draft, setDraft] = useState<UserSettings>(settings)
+  const [draft, setDraft] = useState<UserSettings>(emptySettingsForm())
 
   useEffect(() => {
     if (settingsOpen) {
-      setDraft(settings)
+      setDraft(emptySettingsForm())
     }
-  }, [settingsOpen, settings])
+  }, [settingsOpen])
 
   useEffect(() => {
     if (!settingsOpen) return

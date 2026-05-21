@@ -16,6 +16,11 @@ export function defaultUserSettings(): UserSettings {
   }
 }
 
+/** Blank form when opening settings (new entry each time). */
+export function emptySettingsForm(): UserSettings {
+  return defaultUserSettings()
+}
+
 export function loadUserSettings(): UserSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -42,7 +47,7 @@ export function parseMobileDigits(allDigits: string): {
   if (digits.startsWith('0')) {
     return { countryCode: '+44', mobileNumber: digits.slice(1) }
   }
-  if (digits.startsWith('44') && digits.length > 2) {
+  if (digits.startsWith('44')) {
     return { countryCode: '+44', mobileNumber: digits.slice(2) }
   }
   if (digits.length > 0) {
