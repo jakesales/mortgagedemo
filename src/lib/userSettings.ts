@@ -20,23 +20,49 @@ export function loadUserSettings(): UserSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultUserSettings()
-    return { ...defaultUserSettings(), ...JSON.parse(raw) }
+    return normalizeUserSettings({
+      ...defaultUserSettings(),
+      ...JSON.parse(raw),
+    })
   } catch {
     return defaultUserSettings()
   }
 }
 
+/** Keep country code short (+44). Strip duplicate country digits from the national number. */
+export function normalizeUserSettings(settings: UserSettings): UserSettings {
+  const countryDigits = settings.countryCode.replace(/\D/g, '').slice(0, 4)
+  const countryCode = countryDigits ? `+${countryDigits}` : '+44'
+
+  let nationalDigits = settings.mobileNumber.replace(/\D/g, '')
+  if (countryDigits && nationalDigits.startsWith(countryDigits)) {
+    nationalDigits = nationalDigits.slice(countryDigits.length)
+  }
+
+  return {
+    ...settings,
+    firstName: settings.firstName.trim(),
+    email: settings.email.trim(),
+    countryCode,
+    mobileNumber: nationalDigits,
+  }
+}
+
 export function saveUserSettings(settings: UserSettings): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(normalizeUserSettings(settings)),
+  )
 }
 
 export function formatMobile(settings: UserSettings): string {
-  const code = settings.countryCode.trim()
-  const number = settings.mobileNumber.replace(/\s/g, '')
-  if (!code && !number) return ''
-  if (!code) return number
-  if (!number) return code
-  return `${code}${number}`
+  const { countryCode, mobileNumber } = normalizeUserSettings(settings)
+  const countryDigits = countryCode.replace(/\D/g, '')
+  const nationalDigits = mobileNumber.replace(/\D/g, '')
+
+  if (!countryDigits && !nationalDigits) return ''
+  if (!nationalDigits) return countryCode
+  return `+${countryDigits}${nationalDigits}`
 }
 
 export function getContactWebhookParams(): Record<string, string> {

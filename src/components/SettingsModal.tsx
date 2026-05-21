@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { useUserSettings } from '../context/UserSettingsContext'
-import type { UserSettings } from '../lib/userSettings'
+import { normalizeUserSettings, type UserSettings } from '../lib/userSettings'
 
 function FieldLabel({
   id,
@@ -52,15 +52,13 @@ export function SettingsModal() {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    updateSettings({
-      firstName: draft.firstName.trim(),
-      email: draft.email.trim(),
-      countryCode: (() => {
-        const digits = draft.countryCode.replace(/\D/g, '')
-        return digits ? `+${digits}` : '+44'
-      })(),
-      mobileNumber: draft.mobileNumber.trim(),
-    })
+    updateSettings(
+      normalizeUserSettings({
+        ...draft,
+        firstName: draft.firstName,
+        email: draft.email,
+      }),
+    )
   }
 
   return (
@@ -141,7 +139,7 @@ export function SettingsModal() {
                 autoComplete="tel-country-code"
                 value={draft.countryCode.replace(/^\+/, '')}
                 onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, '')
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
                   setDraft((d) => ({
                     ...d,
                     countryCode: digits ? `+${digits}` : '+',
@@ -149,6 +147,7 @@ export function SettingsModal() {
                 }}
                 className={`${inputClassName} mt-0 w-[4.5rem] shrink-0 rounded-none border-r-0 px-2.5`}
                 placeholder="44"
+                maxLength={4}
                 aria-label="Country code"
               />
               <input
