@@ -29,22 +29,50 @@ export function loadUserSettings(): UserSettings {
   }
 }
 
+/** Parse digits from one mobile field (e.g. 447736736363 or 07736736363). */
+export function parseMobileDigits(allDigits: string): {
+  countryCode: string
+  mobileNumber: string
+} {
+  let digits = allDigits.replace(/\D/g, '')
+
+  if (digits.startsWith('00')) {
+    digits = digits.slice(2)
+  }
+  if (digits.startsWith('0')) {
+    return { countryCode: '+44', mobileNumber: digits.slice(1) }
+  }
+  if (digits.startsWith('44') && digits.length > 2) {
+    return { countryCode: '+44', mobileNumber: digits.slice(2) }
+  }
+  if (digits.length > 0) {
+    return { countryCode: '+44', mobileNumber: digits }
+  }
+  return { countryCode: '+44', mobileNumber: '' }
+}
+
+export function mobileDigitsForInput(settings: UserSettings): string {
+  const { countryCode, mobileNumber } = normalizeUserSettings(settings)
+  const country = countryCode.replace(/\D/g, '')
+  const national = mobileNumber.replace(/\D/g, '')
+  if (!national) return country === '44' ? '' : country
+  return `${country}${national}`
+}
+
 /** Keep country code short (+44). Strip duplicate country digits from the national number. */
 export function normalizeUserSettings(settings: UserSettings): UserSettings {
-  const countryDigits = settings.countryCode.replace(/\D/g, '').slice(0, 4)
-  const countryCode = countryDigits ? `+${countryDigits}` : '+44'
-
-  let nationalDigits = settings.mobileNumber.replace(/\D/g, '')
-  if (countryDigits && nationalDigits.startsWith(countryDigits)) {
-    nationalDigits = nationalDigits.slice(countryDigits.length)
-  }
+  const allDigits = `${settings.countryCode}${settings.mobileNumber}`.replace(
+    /\D/g,
+    '',
+  )
+  const parsed = parseMobileDigits(allDigits)
 
   return {
     ...settings,
     firstName: settings.firstName.trim(),
     email: settings.email.trim(),
-    countryCode,
-    mobileNumber: nationalDigits,
+    countryCode: parsed.countryCode,
+    mobileNumber: parsed.mobileNumber,
   }
 }
 

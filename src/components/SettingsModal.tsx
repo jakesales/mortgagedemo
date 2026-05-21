@@ -1,7 +1,12 @@
 import { useEffect, useId, useState, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { useUserSettings } from '../context/UserSettingsContext'
-import { normalizeUserSettings, type UserSettings } from '../lib/userSettings'
+import {
+  mobileDigitsForInput,
+  normalizeUserSettings,
+  parseMobileDigits,
+  type UserSettings,
+} from '../lib/userSettings'
 
 function FieldLabel({
   id,
@@ -133,35 +138,22 @@ export function SettingsModal() {
                 +
               </span>
               <input
-                id="settings-country-code"
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel-country-code"
-                value={draft.countryCode.replace(/^\+/, '')}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
-                  setDraft((d) => ({
-                    ...d,
-                    countryCode: digits ? `+${digits}` : '+',
-                  }))
-                }}
-                className={`${inputClassName} mt-0 w-[4.5rem] shrink-0 rounded-none border-r-0 px-2.5`}
-                placeholder="44"
-                maxLength={4}
-                aria-label="Country code"
-              />
-              <input
                 id="settings-mobile"
                 type="tel"
-                autoComplete="tel-national"
-                value={draft.mobileNumber}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, mobileNumber: e.target.value }))
-                }
+                inputMode="tel"
+                autoComplete="tel"
+                value={mobileDigitsForInput(draft)}
+                onChange={(e) => {
+                  const parsed = parseMobileDigits(e.target.value)
+                  setDraft((d) => ({ ...d, ...parsed }))
+                }}
                 className={`${inputClassName} mt-0 min-w-0 flex-1 rounded-l-none`}
-                placeholder="7736736363"
+                placeholder="447736736363"
               />
             </div>
+            <p className="mt-1.5 text-xs text-ink-faint">
+              UK numbers: include 44 or enter without the leading zero.
+            </p>
           </div>
 
           <div className="flex gap-2 pt-1">
